@@ -1,0 +1,6 @@
+int main() {
+  float pi = 3.14;
+  // area of circle
+  float area = pi * r * r;
+  if (area >= 100.0) { return 1; } else { return 0; }
+}

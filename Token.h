@@ -1,6 +1,6 @@
 #pragma once
 
-enum class TokenType {
+enum class Token {
 	IDENT,
 	KEYWORD,
 	INT_LIT,
@@ -10,6 +10,7 @@ enum class TokenType {
 	DELIM,
 	SNGL_CMT,
 	MULT_CMT,
-	EOF,
-	ERROR
+	EOFILE,
+	ERROR,
+	START
 };
