@@ -20,30 +20,48 @@ int main() {
 		cout << "Could not find the input file \"input.txt\"" << endl;
 	}
 
-	//char c = file.get();
-	char c;
+	char c = file.get();
 
 	while (true) {
 		switch (token) {
 			case START:
 				// Get the next non-whitespace character
-				while (c == ' ') file.get(c);
+				while (c == ' ') {
+					file.get(c);
+					col++;
+				}
 
-				if (c == '\n') {
+				if (c == '\n') { // New line found
 					line++;
 					col = 1;
 				}
-				else {
+				else { // Token found
 					// token = lookup(c);
+
+					lexeme.clear();
+					lexeme.push_back(c);
+
+					// Save the line and column of the token
 					tkn_line = line;
 					tkn_col = col;
+
+					col++;
 				}
 
 				file.get(c);
+
 				break;
 
 			case IDENT:
-
+				if (isalnum(static_cast<unsigned char>(c)) || c == '_') {
+					lexeme.push_back(c);
+					file.get(c);
+					col++;
+				}
+				else {
+					printToken(tkn_line, tkn_col, token, lexeme);
+					token = START;
+				}
 		}
 	}
 
