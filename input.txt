@@ -1,6 +1,5 @@
-int main() {
-  float pi = 3.14;
-  // area of circle
-  float area = pi * r * r;
-  if (area >= 100.0) { return 1; } else { return 0; }
-}
+string s = "a\tb\nc\"";
+bool ok = true && (2. >= .5) && (x!=y);
+/* comment
+   across lines */
+x = y+z-42%3; while(x<=100){x=x+1;}

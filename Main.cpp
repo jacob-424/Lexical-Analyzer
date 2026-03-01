@@ -7,8 +7,10 @@ using enum Token;
 
 int main() {
 	Token token = Token::START;
-	int line = 0;
-	int col = 0;
+	int line = 1;
+	int col = 1;
+	int tkn_line = 0;
+	int tkn_col = 0;
 	string lexeme = "";
 	ifstream file("input.txt");
 
@@ -18,16 +20,32 @@ int main() {
 		cout << "Could not find the input file \"input.txt\"" << endl;
 	}
 
-	char c = file.get();
+	//char c = file.get();
+	char c;
 
-	//while (true) {
-	//	switch (token) {
-	//		default:
-	//			// token = lookup(c)
-	//	}
-	//}
+	while (true) {
+		switch (token) {
+			case START:
+				// Get the next non-whitespace character
+				while (c == ' ') file.get(c);
 
-	printToken(1, 2, FLOAT_LIT, "1.5");
+				if (c == '\n') {
+					line++;
+					col = 1;
+				}
+				else {
+					// token = lookup(c);
+					tkn_line = line;
+					tkn_col = col;
+				}
+
+				file.get(c);
+				break;
+
+			case IDENT:
+
+		}
+	}
 
 	return 0;
 }
