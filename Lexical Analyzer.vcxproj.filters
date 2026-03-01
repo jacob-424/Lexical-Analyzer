@@ -18,15 +18,12 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PrintToken.cpp">
+    <ClCompile Include="Lex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Token.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PrintToken.h">
+    <ClInclude Include="Lex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

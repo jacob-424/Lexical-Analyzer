@@ -1,12 +1,11 @@
 #include<iostream>
 #include<fstream>
-#include"Token.h"
-#include"PrintToken.h"
+#include"Lex.h"
 using namespace std;
-using enum Token;
+using enum Lex::Token;
 
 int main() {
-	Token token = Token::START;
+	Lex::Token token = START;
 	int line = 1;
 	int col = 1;
 	int tkn_line = 0;
@@ -49,7 +48,6 @@ int main() {
 				}
 
 				file.get(c);
-
 				break;
 
 			case IDENT:
@@ -59,7 +57,8 @@ int main() {
 					col++;
 				}
 				else {
-					printToken(tkn_line, tkn_col, token, lexeme);
+					// token = getToken(); // Check if IDENT or KEYWORD
+					Lex::printToken(tkn_line, tkn_col, token, lexeme);
 					token = START;
 				}
 		}

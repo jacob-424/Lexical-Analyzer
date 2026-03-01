@@ -19,12 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Lex.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="PrintToken.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PrintToken.h" />
-    <ClInclude Include="Token.h" />
+    <ClInclude Include="Lex.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
