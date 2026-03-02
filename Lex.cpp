@@ -1,52 +1,78 @@
 #include"Lex.h"
 using enum Lex::Token;
 
-void Lex::printToken(int line, int col, Token token, string lexeme) {
-	string tkn = "";
+unordered_set<char> Lex::operators = { '+', '-', '*', '%', '=', '!', '<', '>', '&', '|' };
+unordered_set<char> Lex::delimiters = { ';', ',', '(', ')', '{', '}', '[', ']', ':' };
+unordered_set<string> Lex::keywords = { "if", "else", "while", "for", "return", "int",
+										"float", "string", "bool", "true", "false" };
 
-	// Determine if we should output values
-	bool isInt = false;
-	bool isFloat = false;
+Lex::Token Lex::lookup(char c, ifstream& file) {
+	if (file.eof()) return EOFILE;
+	else if (isalpha(c) || c == '_') return IDENT;
+	else if (isdigit(c)) return INT_LIT;
+	else if (c == '.') return FLOAT_LIT;
+	else if (c == '"') return STR_LIT;
+	else if (c == '/') {
+		Token tkn;
+		file.get(c); // A single '/' is ambiguous by itself, so get the next char
+
+		// Check if single line comment, multi line comment, or operator
+		if (c == '/') tkn = SNGL_CMT;
+		else if (c == '*') tkn = MULT_CMT;
+		else tkn = OPERATOR;
+
+		file.seekg(-1, ios::cur); // Go back one char in the file
+		return tkn;
+	}
+	else if (operators.contains(c)) return OPERATOR;
+	else if (delimiters.contains(c)) return DELIM;
+	else return ERROR;
+}
+
+bool Lex::isKeyword(string lexeme) {
+	if (keywords.contains(lexeme)) return true;
+	else return false;
+}
+
+void Lex::printToken(int line, int col, Token token, string lexeme) {
+	string tkn_str = "";
 	float f = 0;
 
 	// Assign the corresponding string for each token
 	switch (token) {
-	case IDENT: tkn = "IDENT"; break;
-	case KEYWORD: tkn = "KEYWORD"; break;
-
-	case INT_LIT:
-		tkn = "INT_LIT";
-		isInt = true;
-		break;
-
+	case IDENT: tkn_str = "IDENT"; break;
+	case KEYWORD: tkn_str = "KEYWORD"; break;
+	case INT_LIT: tkn_str = "INT_LIT"; break;
 	case FLOAT_LIT:
-		tkn = "FLOAT_LIT";
-		isFloat = true;
+		tkn_str = "FLOAT_LIT";
 		f = stof(lexeme); // Convert to float to ensure proper formating (i.e. "2." -> 2.0)
 		break;
 
-	case STR_LIT: tkn = "STR_LIT"; break;
-	case OPERATOR: tkn = "OPERATOR"; break;
-	case DELIM: tkn = "DELIM"; break;
-	case SNGL_CMT: tkn = "SNGL_CMT"; break;
-	case MULT_CMT: tkn = "MULT_CMT"; break;
-	case EOFILE: tkn = "EOF"; break;
-	case ERROR: tkn = "ERROR"; break;
+	case STR_LIT: tkn_str = "STR_LIT"; break;
+	case OPERATOR: tkn_str = "OPERATOR"; break;
+	case DELIM: tkn_str = "DELIM"; break;
+	case SNGL_CMT: tkn_str = "SNGL_CMT"; break;
+	case MULT_CMT: tkn_str = "MULT_CMT"; break;
+	case EOFILE: tkn_str = "EOF"; break;
+	case ERROR: tkn_str = "ERROR"; break;
 	}
-
-	cout << left;
 
 	// Output
-	if (isInt) { // Int output
+	cout << left;
+	if (token == INT_LIT) { // Int output
 		cout << setw(12) << "(" + to_string(line) + ":" + to_string(col) + ")"
-			<< setw(12) << tkn << setw(12) << lexeme << "[" + lexeme + "]" << endl;
+			<< setw(12) << tkn_str << setw(12) << lexeme << "[" + lexeme + "]" << endl;
 	}
-	else if (isFloat) { // Float output
+	else if (token == FLOAT_LIT) { // Float output
 		cout << setw(12) << "(" + to_string(line) + ":" + to_string(col) + ")"
-			<< setw(12) << tkn << setw(12) << lexeme << "[" << f << "]" << endl;
+			<< setw(12) << tkn_str << setw(12) << lexeme << "[" << f << "]" << endl;
+	}
+	else if (token == EOFILE) {
+		cout << setw(12) << "(" + to_string(line) + ":" + to_string(col) + ")"
+			<< setw(12) << tkn_str << endl;
 	}
 	else { // Regular output
 		cout << setw(12) << "(" + to_string(line) + ":" + to_string(col) + ")"
-			<< setw(12) << tkn << lexeme << endl;
+			<< setw(12) << tkn_str << lexeme << endl;
 	}
 }

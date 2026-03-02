@@ -13,7 +13,6 @@ int main() {
 	string lexeme = "";
 	ifstream file("input.txt");
 
-
 	// Check if the input file was found
 	if (!file) {
 		cout << "Could not find the input file \"input.txt\"" << endl;
@@ -35,7 +34,7 @@ int main() {
 					col = 1;
 				}
 				else { // Token found
-					// token = lookup(c);
+					token = Lex::lookup(c, file);
 
 					lexeme.clear();
 					lexeme.push_back(c);
@@ -61,6 +60,12 @@ int main() {
 					Lex::printToken(tkn_line, tkn_col, token, lexeme);
 					token = START;
 				}
+				break;
+
+			case EOFILE:
+				Lex::printToken(tkn_line, tkn_col, token, lexeme);
+				return 0;
+				break;
 		}
 	}
 
