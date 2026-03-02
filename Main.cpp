@@ -3,9 +3,11 @@
 #include"Lex.h"
 using namespace std;
 using enum Lex::Token;
+using enum Lex::ErrorToken;
 
 int main() {
 	Lex::Token token = START;
+	Lex::ErrorToken errToken = CHAR_ERR;
 	int line = 1;
 	int col = 1;
 	int tkn_line = 0;
@@ -22,18 +24,21 @@ int main() {
 
 	while (true) {
 		switch (token) {
+			/* START is not a real token. It handles whitespace, new lines, 
+			EOF, and creates new tokens */
 			case START:
-				// Get the next non-whitespace character
+				// Handle whitespace by getting the next non-whitespace character
 				while (c == ' ' && !file.eof()) {
 					file.get(c);
 					col++;
 				}
 
+				// Handle new line
 				if (c == '\n' && !file.eof()) { // New line found
 					line++;
 					col = 1;
 				}
-				else { // Token found
+				else { // Create new token
 					token = Lex::lookup(c, file);
 
 					lexeme.clear();
@@ -50,44 +55,61 @@ int main() {
 				break;
 
 			case IDENT:
-				// Check for a letter, digit, or underscore, else we reached the end of the token
+				// Add any more letters, digits, or underscores
 				if ((isalnum(static_cast<unsigned char>(c)) || c == '_') && !file.eof()) {
 					Lex::addChar(c, lexeme, file, col);
 				}
-				else {
-					// Check if IDENT or KEYWORD
-					if (Lex::isKeyword(lexeme)) token = KEYWORD;
+				else { // End of token
+					if (Lex::isKeyword(lexeme)) token = KEYWORD; // Check if IDENT or KEYWORD
 					Lex::printToken(tkn_line, tkn_col, token, lexeme);
 					token = START;
 				}
 				break;
 
 			case INT_LIT:
+				// Add any more digits
 				if (isdigit(c) && !file.eof()) {
 					Lex::addChar(c, lexeme, file, col);
 				}
-				else if (c == '.') {
+				else if (c == '.') { // Switch to FLOAT_LIT if we find a period
 					Lex::addChar(c, lexeme, file, col);
 					token = FLOAT_LIT;
 				}
-				else {
+				else { // End of token
 					Lex::printToken(tkn_line, tkn_col, token, lexeme);
 					token = START;
 				}
 				break;
 
 			case FLOAT_LIT:
+				// Add any more digits
 				if (isdigit(c) && !file.eof()) {
 					Lex::addChar(c, lexeme, file, col);
 				}
-				else if (c == '.') { 
-					Lex::addChar(c, lexeme, file, col);
+				else if (c == '.') { // Check if malformed number
 					token = ERROR;
+					errToken = FLOAT_LIT_ERR;
 				}
-				else {
+				else if (lexeme == ".") { // Check if malformed number
+					token = ERROR;
+					errToken = CHAR_ERR;
+				}
+				else { // End of Token
 					Lex::printToken(tkn_line, tkn_col, token, lexeme);
 					token = START;
 				}
+				break;
+
+			case ERROR:
+				if (errToken == FLOAT_LIT_ERR) {
+					// Collect the rest of the malformed number
+					while ((c == '.' || isdigit(c)) && !file.eof()) {
+						Lex::addChar(c, lexeme, file, col);
+					}
+				}
+
+				Lex::printToken(tkn_line, tkn_col, token, lexeme);
+				token = START;
 				break;
 
 			case EOFILE:

@@ -23,6 +23,14 @@ public:
 		START
 	};
 
+	enum class ErrorToken {
+		FLOAT_LIT_ERR,
+		STR_LIT_ERR,
+		SNGL_CMT_ERR,
+		MULT_CMT_ERR,
+		CHAR_ERR
+	};
+
 	static Token lookup(char c, ifstream& file);
 	static bool isKeyword(string lexeme);
 	static void printToken(int line, int col, Token token, string lexeme);
