@@ -26,6 +26,7 @@ public:
 	static Token lookup(char c, ifstream& file);
 	static bool isKeyword(string lexeme);
 	static void printToken(int line, int col, Token token, string lexeme);
+	static void addChar(char& c, string& lexeme, ifstream& file, int& col);
 
 private:
 	static unordered_set<char> operators;

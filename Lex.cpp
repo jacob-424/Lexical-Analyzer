@@ -76,3 +76,9 @@ void Lex::printToken(int line, int col, Token token, string lexeme) {
 			<< setw(12) << tkn_str << lexeme << endl;
 	}
 }
+
+void Lex::addChar(char& c, string& lexeme, ifstream& file, int& col) {
+	lexeme.push_back(c);
+	file.get(c);
+	col++;
+}

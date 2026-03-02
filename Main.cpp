@@ -50,15 +50,41 @@ int main() {
 				break;
 
 			case IDENT:
+				// Check for a letter, digit, or underscore, else we reached the end of the token
 				if ((isalnum(static_cast<unsigned char>(c)) || c == '_') && !file.eof()) {
-					lexeme.push_back(c);
-					file.get(c);
-					col++;
+					Lex::addChar(c, lexeme, file, col);
 				}
 				else {
 					// Check if IDENT or KEYWORD
 					if (Lex::isKeyword(lexeme)) token = KEYWORD;
+					Lex::printToken(tkn_line, tkn_col, token, lexeme);
+					token = START;
+				}
+				break;
 
+			case INT_LIT:
+				if (isdigit(c) && !file.eof()) {
+					Lex::addChar(c, lexeme, file, col);
+				}
+				else if (c == '.') {
+					Lex::addChar(c, lexeme, file, col);
+					token = FLOAT_LIT;
+				}
+				else {
+					Lex::printToken(tkn_line, tkn_col, token, lexeme);
+					token = START;
+				}
+				break;
+
+			case FLOAT_LIT:
+				if (isdigit(c) && !file.eof()) {
+					Lex::addChar(c, lexeme, file, col);
+				}
+				else if (c == '.') { 
+					Lex::addChar(c, lexeme, file, col);
+					token = ERROR;
+				}
+				else {
 					Lex::printToken(tkn_line, tkn_col, token, lexeme);
 					token = START;
 				}
