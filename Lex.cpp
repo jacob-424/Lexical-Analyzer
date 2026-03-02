@@ -1,5 +1,6 @@
 #include"Lex.h"
 using enum Lex::Token;
+using enum Lex::ErrorToken;
 
 unordered_set<char> Lex::operators = { '+', '-', '*', '%', '=', '!', '<', '>', '&', '|' };
 unordered_set<char> Lex::delimiters = { ';', ',', '(', ')', '{', '}', '[', ']', ':' };
@@ -75,6 +76,21 @@ void Lex::printToken(int line, int col, Token token, string lexeme) {
 		cout << setw(12) << "(" + to_string(line) + ":" + to_string(col) + ")"
 			<< setw(12) << tkn_str << lexeme << endl;
 	}
+}
+
+void Lex::printError(int line, int col, ErrorToken errToken, string lexeme) {
+	string err_str = "";
+
+	switch (errToken) {
+		case FLOAT_LIT_ERR: err_str = "Malformed float literal"; break;
+		case STR_LIT_ERR: err_str = "Unterminated string literal"; break;
+		case MULT_CMT_ERR: err_str = "Unterminated comment"; break;
+		case CHAR_ERR: err_str = "Invalid character"; break;
+	}
+
+	cout << left;
+	cout << setw(12) << "(" + to_string(line) + ":" + to_string(col) + ")"
+		<< setw(12) << "ERROR" << setw(30) << err_str + " " << setw(12) << lexeme << endl;
 }
 
 void Lex::addChar(char& c, string& lexeme, ifstream& file, int& col) {

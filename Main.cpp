@@ -14,6 +14,7 @@ int main() {
 	int tkn_col = 0;
 	string lexeme = "";
 	ifstream file("input.txt");
+	bool escaped = false;
 
 	// Check if the input file was found
 	if (!file) {
@@ -40,6 +41,7 @@ int main() {
 				}
 				else { // Create new token
 					token = Lex::lookup(c, file);
+					if (token == ERROR) errToken = CHAR_ERR;
 
 					lexeme.clear();
 					lexeme.push_back(c);
@@ -100,6 +102,29 @@ int main() {
 				}
 				break;
 
+			case STR_LIT:
+				if (c == '\n' || file.eof()) { // Error token if string is unterminated
+					token = ERROR;
+					errToken = STR_LIT_ERR;
+					escaped = false;
+				}
+				else if (c == '"' && !escaped) { // End of token
+					Lex::addChar(c, lexeme, file, col);
+					Lex::printToken(tkn_line, tkn_col, token, lexeme);
+					token = START;
+				}
+				else if (c == '\\' && escaped) { // Allow \ to be escaped
+					escaped = false;
+					Lex::addChar(c, lexeme, file, col);
+				}
+				else { // Add any more char's
+					if (c == '\\') escaped = true;
+					else if (escaped) escaped = false;
+
+					Lex::addChar(c, lexeme, file, col);
+				}
+				break;
+
 			case ERROR:
 				if (errToken == FLOAT_LIT_ERR) {
 					// Collect the rest of the malformed number
@@ -108,7 +133,7 @@ int main() {
 					}
 				}
 
-				Lex::printToken(tkn_line, tkn_col, token, lexeme);
+				Lex::printError(tkn_line, tkn_col, errToken, lexeme);
 				token = START;
 				break;
 
