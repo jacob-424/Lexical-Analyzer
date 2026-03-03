@@ -135,6 +135,29 @@ int main() {
 				token = START;
 				break;
 
+			case DELIM:
+				Lex::printToken(tkn_line, tkn_col, token, lexeme);
+				token = START;
+				break;
+
+			case SNGL_CMT:
+				// Check if token is actually a MULT_CMT or OPERATOR
+				if (c != '/') {
+					// Reroute to correct token
+					if (c == '*') token = MULT_CMT;
+					else token = OPERATOR;
+					break;
+				}
+
+				// Add all characters until EOL is reached
+				while (c != '\n' && !file.eof()) {
+					Lex::addChar(c, lexeme, file, col);
+				}
+				
+				Lex::printToken(tkn_line, tkn_col, token, lexeme);
+				token = START;
+				break;
+
 			case ERROR:
 				if (errToken == FLOAT_LIT_ERR) {
 					// Collect the rest of the malformed number

@@ -13,18 +13,7 @@ Lex::Token Lex::lookup(char c, ifstream& file) {
 	else if (isdigit(c)) return INT_LIT;
 	else if (c == '.') return FLOAT_LIT;
 	else if (c == '"') return STR_LIT;
-	else if (c == '/') {
-		Token tkn;
-		file.get(c); // A single '/' is ambiguous by itself, so get the next char
-
-		// Check if single line comment, multi line comment, or operator
-		if (c == '/') tkn = SNGL_CMT;
-		else if (c == '*') tkn = MULT_CMT;
-		else tkn = OPERATOR;
-
-		file.seekg(-1, ios::cur); // Go back one char in the file
-		return tkn;
-	}
+	else if (c == '/') return SNGL_CMT;
 	else if (operators.contains(c)) return OPERATOR;
 	else if (delimiters.contains(c)) return DELIM;
 	else return ERROR;
