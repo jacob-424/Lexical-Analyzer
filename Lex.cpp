@@ -103,7 +103,7 @@ void Lex::printMULT_CMT(int line, int col, bool isError, string lexeme) {
 	if (isError) indent = string(54, ' ');
 	else indent = string(24, ' ');
 
-	int pos = lexeme.find('\n');
+	size_t pos = lexeme.find('\n');
 	
 	// Add indentation after each new line
 	while (pos != string::npos) {
