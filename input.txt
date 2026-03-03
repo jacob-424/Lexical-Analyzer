@@ -1,20 +1,6 @@
- .g a b _ajnwdj23 j232
-if rjaj_float      
-  5_5 66232 while2_ a323 k22 
-int  ab                
-   .6
-2.3 2a  ..5
-   .789. #
-9. 88.2.3 . 
-
-"ab#c$" " a2ma03 
- test321 " t 
-"" "
-"abc\"" 23 "ef g\3
- 123  "h ij\\\\\" "lmn\\a "
-
-// afjn"abc\""ajaj dn 88.2.3 int .// "lmn\\a "awjdaijwd
-
- .g a b _ajnwdj23 j232
-if rja//j_float      
-  5_5 / 66232 w//hil@#%^@$@e2_ a323 k22
+string s = "a\tb\nc\"";
+bool ok = true && (2. >= .5) && (x!=y);
+/* comment
+across lines
+x = y+z-42%3;
+ \*/ while(x<=100){x=x+1;}

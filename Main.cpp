@@ -158,6 +158,25 @@ int main() {
 				token = START;
 				break;
 
+			case MULT_CMT:
+
+				while (!file.eof()) {
+					if (c == '/' && lexeme.back() == '*') {
+						Lex::addChar(c, lexeme, file, col);
+						Lex::printToken(tkn_line, tkn_col, token, lexeme);
+						token = START;
+						break;
+					}
+					else Lex::addChar(c, lexeme, file, col);
+				}
+
+				if (token != START) {
+					token = ERROR;
+					errToken = MULT_CMT_ERR;
+				}
+
+				break;
+
 			case ERROR:
 				if (errToken == FLOAT_LIT_ERR) {
 					// Collect the rest of the malformed number

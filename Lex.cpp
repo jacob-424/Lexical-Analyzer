@@ -61,6 +61,9 @@ void Lex::printToken(int line, int col, Token token, string lexeme) {
 		cout << setw(12) << "(" + to_string(line) + ":" + to_string(col) + ")"
 			<< setw(12) << tkn_str << endl;
 	}
+	else if (token == MULT_CMT) {
+		printMULT_CMT(line, col, false, lexeme);
+	}
 	else { // Regular output
 		cout << setw(12) << "(" + to_string(line) + ":" + to_string(col) + ")"
 			<< setw(12) << tkn_str << lexeme << endl;
@@ -73,13 +76,42 @@ void Lex::printError(int line, int col, ErrorToken errToken, string lexeme) {
 	switch (errToken) {
 		case FLOAT_LIT_ERR: err_str = "Malformed float literal"; break;
 		case STR_LIT_ERR: err_str = "Unterminated string literal"; break;
-		case MULT_CMT_ERR: err_str = "Unterminated comment"; break;
+		case MULT_CMT_ERR:
+			printMULT_CMT(line, col, true, lexeme);
+			return;
+			break;
 		case CHAR_ERR: err_str = "Invalid character"; break;
 	}
 
 	cout << left;
 	cout << setw(12) << "(" + to_string(line) + ":" + to_string(col) + ")"
 		<< setw(12) << "ERROR" << setw(30) << err_str + " " << setw(12) << lexeme << endl;
+}
+
+void Lex::printMULT_CMT(int line, int col, bool isError, string lexeme) {
+	string indent = "";
+	if (isError) indent = string(54, ' ');
+	else indent = string(24, ' ');
+
+	int pos = lexeme.find('\n');
+	
+	while (pos != string::npos) {
+		lexeme.insert(pos + 1, indent);
+		pos = lexeme.find('\n', pos + 1);
+	}
+
+	cout << left;
+
+	if (isError) {
+		cout << setw(12) << "(" + to_string(line) + ":" + to_string(col) + ")"
+			<< setw(12) << "ERROR" << setw(30) << "Unterminated comment " << setw(12) << lexeme << endl;
+	}
+	else {
+		cout << setw(12) << "(" + to_string(line) + ":" + to_string(col) + ")"
+			<< setw(12) << "MULT_CMT" << lexeme << endl;
+	}
+
+	
 }
 
 void Lex::addChar(char& c, string& lexeme, ifstream& file, int& col) {
