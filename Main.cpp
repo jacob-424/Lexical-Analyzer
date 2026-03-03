@@ -124,6 +124,16 @@ int main() {
 					Lex::addChar(c, lexeme, file, col);
 				}
 				break;
+				
+			case OPERATOR:
+				// Check if it's one of these operators: ==, !=, <=, >=, &&, ||
+				if (c == '=' || c == '&' || c == '|') {
+					Lex::addChar(c, lexeme, file, col);
+				}
+
+				Lex::printToken(tkn_line, tkn_col, token, lexeme);
+				token = START;
+				break;
 
 			case ERROR:
 				if (errToken == FLOAT_LIT_ERR) {
