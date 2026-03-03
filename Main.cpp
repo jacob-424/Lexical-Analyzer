@@ -6,19 +6,25 @@ using enum Lex::Token;
 using enum Lex::ErrorToken;
 
 int main() {
-	Lex::Token token = START;
-	Lex::ErrorToken errToken = CHAR_ERR;
+	Lex::Token token = START; // Current token being processed
+	Lex::ErrorToken errToken = CHAR_ERR; // Current error type, if there is one
+	
+	// Counters for line and col
 	int line = 1;
 	int col = 1;
+
+	// Line and col number for the current token
 	int tkn_line = 0;
 	int tkn_col = 0;
-	string lexeme = "";
+
+	string lexeme = ""; // The lexeme of the current token
 	ifstream file("input.txt");
-	bool escaped = false;
+	bool escaped = false; // True of the current char has been escaped by the previous char
 
 	// Check if the input file was found
 	if (!file) {
 		cout << "Could not find the input file \"input.txt\"" << endl;
+		return 1;
 	}
 
 	char c = file.get();
@@ -26,7 +32,7 @@ int main() {
 	while (true) {
 		switch (token) {
 			/* START is not a real token. It handles whitespace, new lines, 
-			EOF, and creates new tokens */
+			EOF, and starts new tokens */
 			case START:
 				// Handle whitespace by getting the next non-whitespace character
 				while (c == ' ' && !file.eof()) {
@@ -34,19 +40,18 @@ int main() {
 					col++;
 				}
 
-				// Handle new line
-				if (c == '\n' && !file.eof()) { // New line found
+				if (c == '\n' && !file.eof()) { // Handle new line
 					line++;
 					col = 1;
 				}
-				else { // Create new token
+				else { // Start new token
 					token = Lex::lookup(c, file);
 					if (token == ERROR) errToken = CHAR_ERR;
 
-					lexeme.clear();
+					lexeme.clear(); // Clear the lexeme of previous token
 					lexeme.push_back(c);
 
-					// Save the line and column of the token
+					// Save the line and column of the new token
 					tkn_line = line;
 					tkn_col = col;
 
@@ -56,6 +61,7 @@ int main() {
 				file.get(c);
 				break;
 
+			// Hanldes both IDENT and KEYWORD tokens
 			case IDENT:
 				// Add any more letters, digits, or underscores
 				if ((isalnum(static_cast<unsigned char>(c)) || c == '_') && !file.eof()) {
@@ -68,6 +74,7 @@ int main() {
 				}
 				break;
 
+			// Handles INT_LIT and reroutes to FLOAT_LIT if needed
 			case INT_LIT:
 				// Add any more digits
 				if (isdigit(c) && !file.eof()) {
@@ -88,11 +95,11 @@ int main() {
 				if (isdigit(c) && !file.eof()) {
 					Lex::addChar(c, lexeme, file, col);
 				}
-				else if (c == '.') { // Check if malformed number
+				else if (c == '.') { // Handles error cases where a second '.' is found
 					token = ERROR;
 					errToken = FLOAT_LIT_ERR;
 				}
-				else if (lexeme == ".") { // Check if malformed number
+				else if (lexeme == ".") { // Handles the error case where the entire lexeme is "."
 					token = ERROR;
 					errToken = CHAR_ERR;
 				}
@@ -113,7 +120,7 @@ int main() {
 					Lex::printToken(tkn_line, tkn_col, token, lexeme);
 					token = START;
 				}
-				else if (c == '\\' && escaped) { // Allow \ to be escaped
+				else if (c == '\\' && escaped) { // Allows '\' to be escaped
 					escaped = false;
 					Lex::addChar(c, lexeme, file, col);
 				}
@@ -126,20 +133,23 @@ int main() {
 				break;
 				
 			case OPERATOR:
-				// Check if it's one of these operators: ==, !=, <=, >=, &&, ||
+				// Check if it's one of the 2 char long operators: ==, !=, <=, >=, &&, ||
 				if (c == '=' || c == '&' || c == '|') {
 					Lex::addChar(c, lexeme, file, col);
 				}
 
+				// End of token
 				Lex::printToken(tkn_line, tkn_col, token, lexeme);
 				token = START;
 				break;
 
 			case DELIM:
+				// End of token
 				Lex::printToken(tkn_line, tkn_col, token, lexeme);
 				token = START;
 				break;
 
+			// Handles SNGL_CMT and reroutes to MULT_CMT or OPERATOR if needed
 			case SNGL_CMT:
 				// Check if token is actually a MULT_CMT or OPERATOR
 				if (c != '/') {
@@ -154,14 +164,17 @@ int main() {
 					Lex::addChar(c, lexeme, file, col);
 				}
 				
+				// End of token
 				Lex::printToken(tkn_line, tkn_col, token, lexeme);
 				token = START;
 				break;
 
 			case MULT_CMT:
-
+				// Add all char's until the comment is terminated
 				while (!file.eof()) {
+					// Check if terminated
 					if (c == '/' && lexeme.back() == '*') {
+						// End of token
 						Lex::addChar(c, lexeme, file, col);
 						Lex::printToken(tkn_line, tkn_col, token, lexeme);
 						token = START;
@@ -170,6 +183,7 @@ int main() {
 					else Lex::addChar(c, lexeme, file, col);
 				}
 
+				// Error token if the comment was never terminated
 				if (token != START) {
 					token = ERROR;
 					errToken = MULT_CMT_ERR;
@@ -185,6 +199,7 @@ int main() {
 					}
 				}
 
+				// End of token
 				Lex::printError(tkn_line, tkn_col, errToken, lexeme);
 				token = START;
 				break;
@@ -195,6 +210,5 @@ int main() {
 				break;
 		}
 	}
-
 	return 0;
 }
