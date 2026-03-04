@@ -98,7 +98,7 @@ int main() {
 				if (isdigit(c) && !file.eof()) {
 					Lex::addChar(c, lexeme, file, col);
 				}
-				else if (c == '.') { // Handles error cases where a second '.' is found
+				else if (c == '.' && !file.eof()) { // Handles error cases where a second '.' is found
 					token = ERROR;
 					errToken = FLOAT_LIT_ERR;
 				}
