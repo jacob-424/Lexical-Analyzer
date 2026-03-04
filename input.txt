@@ -1,8 +1,7 @@
-string s = "a\tb\#nc\"";
-bool ok = tru#e ^ && (2. >= .5) && (x!=y);
+string s = "a\tb\nc\"";
+bool ok = true && (2. >= .5) && (x!=y);
 /* comment
-   across lines */
-
-#
-
+   across 
+lines 
+*/
 x = y+z-42%3; while(x<=100){x=x+1;}

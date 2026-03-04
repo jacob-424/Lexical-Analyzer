@@ -183,7 +183,13 @@ int main() {
 						token = START;
 						break;
 					}
-					else Lex::addChar(c, lexeme, file, col);
+					else {
+						Lex::addChar(c, lexeme, file, col);
+						if (c == '\n') {
+							line++;
+							col = 1;
+						}
+					}
 				}
 
 				// Error token if the comment was never terminated
