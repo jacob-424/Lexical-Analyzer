@@ -40,6 +40,9 @@ int main() {
 					col++;
 				}
 
+				// Skip carriage returns
+				if (c == '\r') file.get(c);
+
 				if (c == '\n' && !file.eof()) { // Handle new line
 					line++;
 					col = 1;
